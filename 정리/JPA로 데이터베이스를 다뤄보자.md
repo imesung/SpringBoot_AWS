@@ -58,11 +58,9 @@ USer user = userDao.findUser();
 Group group = groupDao.findGroup(user.getGroupId());
 ```
 
-**User 따로, Group 따로 조회하게 되는 현상을 볼 수 있다.**
+User 따로, Group 따로 조회하게 되는 현상을 볼 수 있다.
 
-
-
-**즉, 상속 혹은 1:N 등의 다양한 객체 모델리을 데이터베이스로는 구현이 불가능하다는 것이다.**
+**즉, 상속 혹은 1:N 등의 다양한 객체 모델링을 데이터베이스로는 구현이 불가능하다는 것이다.**
 
 
 
@@ -70,8 +68,90 @@ Group group = groupDao.findGroup(user.getGroupId());
 
 **JPA는 관계형 데이터베이스와 객체지향 프로그래밍 언어을 중간에서 패러다임을 일치시켜준다**
 
-
-
 **결과적으로, 개발자는 객체지향적으로 프로그래밍하고, JPA가 관계형 데이터베이스에 맞게 SQL을 대신 생성하여 실행하는 것이다.**
 
 객체 중심으로 개발이 되므로 대규모 트래픽과 데이터를 가진 서비스에서는 JPA를 표준 기술로 자리 잡고 있다.
+
+
+
+**Spring Data JPA**
+
+인터페이스인 JPA를 사용하기 위해서는 구현체가 필요하나 Spring에서는 구현체를 직접 다루지 않는다.
+
+즉, **Spring Data JPA**라는 모듈을 이용하여 JPA 기술을 다룬다.
+
+JPA와 Spring Data JPA의 관계는 **JPA < Hibernate < Spring Data JPA**로 볼 수 있다. 
+
+사실 Hibernate와 Spring Data JPA는 큰 차이가 없음에도 불구하고 Spring Data JPA가 나타난 이유는 두가지가 있다.
+
+- 구현체 교체의 용이성
+  - Hibernate 외에 다른 구현체로 쉽게 교체하기 위함이다.
+  - Spring Data JPA를 사용하면 새로운 구현체를 쉽게 교체할 수 있다. **Why?** Spring Data JPA 내부에서 구현체 매핑을 지원해주기 때문인다.
+- 저장소 교체의 용이성
+  - 관계형 데이터베이스 외에 다른 저장소로 쉽게 교체하기 위함이다.
+  - Spring Data JPA에서 Spring Data MongoDB로 교체가 필요하다면 개발자는 Spring Data JPA에서 Spring Data MongoDB로 의존성만 교체하면 된다.
+
+이것이 가능한 이유는 Spring Data의 하위 프로젝트는 기본적으로 **CRUD 인터페이스가 같기** 때문이다.
+
+즉, Spring Data의 하위 프로젝트들은 save(), findAll(), findOne() 등의 인터페이스를 갖고 있다. 그로인해 저장소가 바뀌어도 인터페이스의 구현 메소드가 동일하므로 기능 변경은 없는 것이다.
+
+
+
+**실무에서는 JPA**
+
+JPA를 잘 쓰려면 **객체지향 프로그래밍과 관계형 데이터베이스**를 둘 다 이해해야 한다. 
+
+JPA의 장점
+
+- CRUD를 직접 작성할 필요가 없어진다.
+- 부모-자식 관계 표현, 1:N 관계 표현, 상태와 행위를 한곳에서 관리하는 등의 객체지향 프로그래밍을 쉽게 할 수 있다.
+
+
+
+### 프로젝트에 Spring Data JPA 적용
+
+**build.gradle에 추가**
+
+```java
+dependencies {
+	...
+        
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('com.h2database:h2')
+	
+    ...
+}
+```
+
+**spring-boot-starter-data-jpa**
+
+- 스프링 부트용 Spring Data JPA 추상화 라이브러리이다.
+- 스프링 부트 버전에 맞춰 자동으로 JPA 관련 라이브러리들의 버전을 관리해준다.
+
+
+
+**h2**
+
+- 인메모리 관계형 데이터베이스이다.
+- 별도의 설치가 필요없이 프로젝트 의존성만으로 관리가 가능하다.
+- 메모리에서 실행되기 때문에 애플리케이션을 재시작할 때마다 초기화된다는 점에서 테스트 용도로 많이 사용한다.
+- 우리는 JPA 의 테스트, 로컬 환경에서의 구동에 사용할거다.
+
+
+
+### JPA 기능을 사용해보자
+
+**domain이라는 package를 추가하자**
+
+![image](https://user-images.githubusercontent.com/40616436/73076111-cbcd4a00-3f00-11ea-9212-105aa00fe0c9.png)
+
+여기서 도메인이란 게시글, 댓글, 회원, 정산, 결제 등의 소프트웨어에 대한 요구사항 혹은 문제 영역을 일컬어 하는 말이다.
+
+MyBatis와 같은 쿼리 매퍼를 사용했다면 **dao** 패키지를 생각할 수 있는데, dao 패키지와는 조금 결이 다르다고 생각하면 된다.
+
+기존에 xml에 쿼리를 담고, 클래스는 오직 쿼리의 결과만 담던 일들이 모두 **도메인 클래스**라고 불리는 곳에서 해결하면 되는 것이다.
+
+
+
+**자! 이제 domain 패키지에 posts 패키지와 posts 클래스를 만들자**
+
