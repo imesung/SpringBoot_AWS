@@ -40,6 +40,14 @@ public class PostsService {
     //이 상태에서 해당 데이터의 값을 변경하면 트랜잭션이 끝나는 시점에 해당 테이블에 변경분을 반영한다. 즉, Enttity 객체의 값만 변경하면
     //별도로 Update 쿼리를 날리 필요가 없다.(더티 체킹)
 
+    @Transactional
+    public void delete (Long id) {
+        Posts posts = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+
+        postsRepository.delete(posts);
+    }
+
     @Transactional(readOnly = true)
     public PostsResponseDto findById(Long id) {
         Posts entity = postsRepository.findById(id)
