@@ -1,8 +1,8 @@
 package com.mesung.interview;
 
 public class SingletonEx {
-    private SingletonEx() {
-
+    private SingletonEx() throws Exception {
+        throw new Exception();
     }
 
     public static SingletonEx getInstance() {
