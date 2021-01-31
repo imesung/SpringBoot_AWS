@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashSet;
+
 @RestController
 public class HelloController {
     @GetMapping("/hello")
@@ -13,7 +17,13 @@ public class HelloController {
     }
 
     @GetMapping("/hello/dto")
-    public HelloReponseDto helloDto(@RequestParam("name") String name, @RequestParam("amount") int amount) {
+    public HelloReponseDto helloDto(@RequestParam("name") String name, @RequestParam("amount") int amount, HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("str", "11");
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
         return new HelloReponseDto(name, amount);
     }
 }

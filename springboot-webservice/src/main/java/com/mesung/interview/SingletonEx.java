@@ -2,7 +2,7 @@ package com.mesung.interview;
 
 public class SingletonEx {
     private SingletonEx() throws Exception {
-        throw new Exception();
+
     }
 
     public static SingletonEx getInstance() {
@@ -10,6 +10,15 @@ public class SingletonEx {
     }
 
     private static class LazyHolder{
-        private static final SingletonEx singletonEx = new SingletonEx();
+
+        public static SingletonEx singletonEx;
+
+        static {
+            try {
+                singletonEx = new SingletonEx();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
