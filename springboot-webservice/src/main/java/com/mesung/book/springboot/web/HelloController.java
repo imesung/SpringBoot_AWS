@@ -19,7 +19,7 @@ public class HelloController {
     @GetMapping("/hello/dto")
     public HelloReponseDto helloDto(@RequestParam("name") String name, @RequestParam("amount") int amount, HttpServletResponse response) {
 
-        Cookie cookie = new Cookie("str", "11");
+        Cookie cookie = new Cookie("custNo", "112233");
         cookie.setPath("/");
 
         response.addCookie(cookie);
